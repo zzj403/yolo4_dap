@@ -51,17 +51,20 @@ def get_region_boxes(boxes_and_confs):
 
     boxes_list = []
     confs_list = []
+    objectness_list = []
 
     for item in boxes_and_confs:
         boxes_list.append(item[0])
         confs_list.append(item[1])
+        objectness_list.append(item[2])
 
     # boxes: [batch, num1 + num2 + num3, 1, 4]
     # confs: [batch, num1 + num2 + num3, num_classes]
     boxes = torch.cat(boxes_list, dim=1)
     confs = torch.cat(confs_list, dim=1)
+    objectness = torch.cat(objectness_list, dim=1)
         
-    return [boxes, confs]
+    return [boxes, confs, objectness]
 
 
 def convert2cpu(gpu_matrix):
@@ -99,6 +102,11 @@ def do_detect(model, img, conf_thresh, nms_thresh, use_cuda=1):
     print('           Preprocess : %f' % (t1 - t0))
     print('      Model Inference : %f' % (t2 - t1))
     print('-----------------------------------')
+    
+    cls_tensor = output[1]
+    obj_tesnor = output[2]
+    cls_with_obj = cls_tensor*obj_tesnor
+    output = [output[0], cls_with_obj]
 
     return utils.post_processing(img, conf_thresh, nms_thresh, output)
 
