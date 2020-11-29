@@ -10,11 +10,8 @@ import sys
 # sys.path[0] = '/data/zijian-fwxz/mycode/mmdetection'
 
 
-from mmdet import __version__
-from mmdet.apis import init_detector, inference_detector, show_result_pyplot, get_Image_ready
-
 class PersonTimeData(Dataset): #继承Dataset
-    def __init__(self, img_dir='../common_data/person_train_dog/train', ): #__init__是初始化该类的一些基础参数
+    def __init__(self, img_dir='../common_data/person_train_dog/train', use_num=None): #__init__是初始化该类的一些基础参数
         self.img_dir = img_dir   
 
         self.images = os.listdir(self.img_dir)
@@ -48,7 +45,9 @@ class PersonTimeData(Dataset): #继承Dataset
             #     print(result_person.shape[0])
             #     print()
 
-
+        if use_num != None:
+            self.images = self.images[:use_num]
+            self.boxes = self.boxes[:use_num]
 
             '''
             # 保存
